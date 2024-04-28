@@ -16,4 +16,4 @@ Ahí se halla el diseño del sistema, el análisis de requerimientos, el anális
 ## Licencia
 
 El framework Laravel es un software de código abierto con licencia [MIT license](https://opensource.org/licenses/MIT).
-En cuanto al proyecto, se encuentra bajo la licencia [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+<!-- En cuanto al proyecto, se encuentra bajo la licencia [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/). -->
