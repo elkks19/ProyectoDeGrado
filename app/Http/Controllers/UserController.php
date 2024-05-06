@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -15,7 +16,7 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        $users = User::All()->except(Auth::user()->id);
+        $users = User::withTrashed()->get()->except(Auth::id());
 
         $users = $users->map(function ($user) {
             return [
@@ -40,28 +41,21 @@ class UserController extends Controller
                 [ 'field' => 'updated_at', 'header' => 'Ultima Actualización'],
                 [ 'field' => 'deleted_at', 'header' => 'Fecha de Eliminación'],
             ],
+            'createColumns' => [
+                [ 'field' => 'name', 'header' => 'Nombre', 'type' => 'text' ],
+                [ 'field' => 'email', 'header' => 'Email', 'type' => 'email' ],
+                [ 'field' => 'role', 'header' => 'Rol', 'type' => 'select', 'options' => Role::All()->pluck('name') ],
+                [ 'field' => 'password', 'header' => 'Contraseña', 'type' => 'password' ],
+                [ 'field' => 'password_confirmation', 'header' => 'Confirmar Contraseña', 'type' => 'password' ],
+            ],
+            'editColumns' => [
+                [ 'field' => 'name', 'header' => 'Nombre'],
+                [ 'field' => 'email', 'header' => 'Email'],
+                [ 'field' => 'role', 'header' => 'Rol'],
+            ],
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //

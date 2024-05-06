@@ -1,5 +1,4 @@
-<script setup>
-import Button from 'primevue/button';
+<script setup> import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Toast from 'primevue/toast';
@@ -7,7 +6,12 @@ import ConfirmDialog from 'primevue/confirmdialog';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Toolbar from 'primevue/toolbar';
-import { FilterMatchMode } from 'primevue/api';
+import Calendar from 'primevue/calendar';
+import MultiSelect from 'primevue/multiselect';
+import Password from 'primevue/password';
+import FloatLabel from 'primevue/floatlabel';
+import ContextMenu from 'primevue/contextmenu';
+
 
 //MIS COMPONENTES
 import NavbarLink from '@/Components/SuperAdmin/NavbarLink.vue';
@@ -18,8 +22,20 @@ export default {
     data() {
         return {
             submitted: false,
-            details: false,
+            extra: false,
             eliminar: false,
+            create: false,
+
+            createData: [],
+
+            selectedData: [],
+            selectedRow: null,
+
+            menuModel: [
+                {label: 'Detalles', icon: 'pi pi-fw pi-search', command: () => this.detalles(this.selectedData) },
+                {label: 'Editar', icon: 'pi pi-fw pi-pen-to-square', command: () => this.editar(this.selectedRow) },
+                {label: 'Eliminar', icon: 'pi pi-fw pi-times', command: () => this.confirmarEliminacion(this.selectedRow) }
+            ],
 
             filtros: {},
             estados: [
@@ -92,10 +108,18 @@ export default {
             selected: null,
             datos: [],
             columns: [],
+            createColumns: [],
+            editColumns: [],
         }
     },
     methods: {
-        confirmarEliminacion(row) {
+        editar(row){
+            console.log(row);
+        },
+        onRowContextMenu(event) {
+            this.$refs.cm.show(event.originalEvent);
+        },
+        confirmarEliminacion(row = null) {
             this.$confirm.require({
                 group: 'eliminar',
                 header: 'Confirmar eliminación',
@@ -108,7 +132,14 @@ export default {
                 rejectLabel: 'Cancelar',
                 acceptLabel: 'Eliminar',
                 accept: () => {
-                    this.remove(row);
+                    if (row) {
+                        this.remove(row);
+                    } else{
+                        this.selectedData.forEach(row => {
+                            this.remove(row);
+                        });
+                    }
+
                     this.$toast.add({ severity: 'info', summary: 'Confirmado', detail: 'Haz eliminado el registro correctamente', life: 3000 });
                 },
                 reject: () => {
@@ -125,11 +156,16 @@ export default {
             window.axios({
                 url: this.selected.url,
             }).then(response => {
+                console.log(response.data);
                 this.datos = response.data.data;
                 this.columns = response.data.columns;
+                this.createColumns = response.data.createColumns;
+                this.editColumns = response.data.editColumns;
             }).catch(error => {
                 this.datos = [];
                 this.columns = [];
+                this.createColumns = [];
+                this.editColumns = [];
                 this.selected = null;
                 console.log(error);
             });
@@ -141,6 +177,10 @@ export default {
             this.refreshDataTable();
         },
 
+
+        store(){
+            console.log(this.createData);
+        },
 
         remove(row){
             window.axios({
@@ -186,18 +226,20 @@ export default {
 
         <Toolbar class="mb-4">
             <template #start>
-                <Button label="Nuevo" icon="pi pi-plus" severity="success" class="mr-2" @click="openNew" />
-                <Button label="Eliminar" icon="pi pi-trash" severity="danger" @click="confirmarEliminacion" :disabled="!selectedProducts || !selectedProducts.length" />
+                <Button label="Nuevo" icon="pi pi-plus" severity="success" class="mr-2" @click="create = true" />
+                <Button label="Eliminar" icon="pi pi-trash" severity="danger" @click="confirmarEliminacion()" :disabled="!selectedData || !selectedData.length" />
             </template>
             <template #end>
-                <!-- <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block" /> -->
                 <Button label="Exportar" icon="pi pi-upload" severity="help" @click="exportCSV($event)"  />
             </template>
         </Toolbar>
 
+        <ContextMenu ref="cm" :model="menuModel" @hide="selectedRow = null" />
         <DataTable :value="datos" tableStyle="min-width: 50rem" paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" removableSort
-                showGridlines ref="dt">
+                showGridlines ref="dt" v-model:selection="selectedData" @row-contextmenu="onRowContextMenu"
+                v-model:contextMenuSelection="selectedRow" :contextMenuSelection="selectedRow" contextMenu>
 
+            <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
             <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header" sortable />
 
         </DataTable>
@@ -215,7 +257,42 @@ export default {
     </template>
 </ConfirmDialog>
 
+<!--DIALOGO PARA CREAR-->
+<Dialog v-model:visible="create" modal>
+    <template #header>
+        <span class="p-text-secondary block mb-5 w-full">Crear nuevo registro.</span>
+    </template>
 
+
+    <div class="w-full flex justify-content-center " v-for="col in createColumns">
+
+        <FloatLabel class="w-full mt-5 mb-5" :id="col.field">
+
+            <InputText :id="col.field" class="w-full" autocomplete="off" v-if="col.type === 'text' || col.type === 'email'" v-model="createData[col.field]" />
+
+            <!-- <Calendar v-if="col.type === 'date'" class="w-full" :id="col.field" v-model="createData[col.field]" /> -->
+
+            <MultiSelect :id="col.field" :options="col.options" class="w-full" v-if="col.type === 'select'" display="chip" v-model="createData[col.field]"
+            :maxSelectedValues="2" />
+
+            <Password v-if="col.type === 'password'" :feedback="false" :inputId="col.field"  class="w-full" toggleMask v-model="createData[col.field]" />
+
+
+            <label :for="col.field" class="font-semibold ">
+                {{ col.header }}
+            </label>
+
+        </FloatLabel>
+
+    </div>
+
+    <template #footer>
+        <Button label="Cancelar" text severity="secondary" @click="create = false" autofocus />
+        <Button label="Guardar" outlined severity="secondary" @click="store()" autofocus />
+    </template>
+</Dialog>
+
+<!--TOAST-->
 <Toast/>
 
 </template>

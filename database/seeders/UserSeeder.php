@@ -20,24 +20,27 @@ class UserSeeder extends Seeder
             'email' => 'rafafabiani1909@gmail.com',
             'password' => Hash::make('asdf1234'),
             'ci' => '9101085'
-        ]);
+        ])->assignRole('superAdmin');
+
         User::create([
             'name' => 'Prueba',
             'email' => 'prueba@prueba.com',
             'password' => Hash::make('prueba'),
             'ci' => '9101010'
-        ]);
+        ])->assignRole('usuario');
+
         User::create([
             'name' => 'Prueba 2',
             'email' => 'otraprueba@prueba.com',
             'password' => Hash::make('prueba'),
             'ci' => '12341234'
-        ]);
+        ])->assignRole('usuario');
+
         User::create([
             'name' => 'Prueba 3',
             'email' => 'otraprueba2@prueba.com',
             'password' => Hash::make('prueba'),
             'ci' => '910812'
-        ]);
+        ])->assignROle('personal');
     }
 }

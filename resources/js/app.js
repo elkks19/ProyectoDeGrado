@@ -1,6 +1,7 @@
 import './bootstrap';
 import '../css/app.css';
 import "primeicons/primeicons.css";
+// import 'primevue/resources/primevue.min.css';
 // import 'primevue/resources/themes/aura-dark-amber/theme.css'
 // import 'primevue/resources/themes/aura-light-blue/theme.css'
 // import 'primevue/resources/themes/aura-dark-cyan/theme.css'
