@@ -10,11 +10,23 @@
         "@tailwindcss/forms": "^0.5.3",
         "@vitejs/plugin-vue": "^5.0.0",
         "autoprefixer": "^10.4.12",
-        "axios": "^1.6.4",
+        "axios": "^1.6.8",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.31",
         "tailwindcss": "^3.2.1",
         "vite": "^5.0",
         "vue": "^3.4.0"
+    },
+    "dependencies": {
+        "bootstrap-icons": "^1.11.3",
+        "datatables.net-buttons-dt": "^3.0.2",
+        "datatables.net-colreorder-dt": "^2.0.1",
+        "datatables.net-datetime": "^1.5.2",
+        "datatables.net-dt": "^2.0.5",
+        "datatables.net-vue3": "^3.0.1",
+        "pdfmake": "^0.2.10",
+        "primeflex": "^3.3.1",
+        "primeicons": "^7.0.0",
+        "primevue": "^3.52.0"
     }
 }
