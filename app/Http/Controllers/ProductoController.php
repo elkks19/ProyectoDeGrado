@@ -8,59 +8,61 @@ use App\Models\Producto;
 
 class ProductoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $productos = Producto::withTrashed()->get();
+
+        $productos = $productos->map(function ($role) {
+            return [
+                'id' => $role->id,
+                'nombre' => $role->nombre,
+                'descripcion' => $role->descripcion,
+                'precio' => $role->precio,
+                'created_at' => $role->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $role->updated_at->format('Y-m-d H:i:s'),
+                'deleted_at' => $role->deleted_at == null ? null : $role->deleted_at->format('Y-m-d H:i:s'),
+            ];
+        });
+
+        return response()->json([
+            'data' => $productos,
+            'columns' => [
+                [ 'field' => 'id', 'header' => 'ID', 'type' => 'text' ],
+                [ 'field' => 'nombre', 'header' => 'Nombre', 'type' => 'text'],
+                [ 'field' => 'descripcion', 'header' => 'Descripcion', 'type' => 'text'],
+                [ 'field' => 'precio', 'header' => 'Precio', 'type' => 'text'],
+                [ 'field' => 'created_at', 'header' => 'Fecha de Creación', 'type' => 'date'],
+                [ 'field' => 'updated_at', 'header' => 'Ultima Actualización', 'type' => 'date'],
+                [ 'field' => 'deleted_at', 'header' => 'Fecha de Eliminación', 'type' => 'text' ],
+            ],
+            'createColumns' => [
+                [ 'field' => 'nombre', 'header' => 'Nombre', 'type' => 'text' ],
+                [ 'field' => 'descripcion', 'header' => 'Descripcion', 'type' => 'text' ],
+                [ 'field' => 'precio', 'header' => 'Precio', 'type' => 'text' ],
+            ],
+            'editColumns' => [
+                [ 'field' => 'nombre', 'header' => 'Nombre', 'type' => 'text' ],
+                [ 'field' => 'descripcion', 'header' => 'Descripcion', 'type' => 'text' ],
+                [ 'field' => 'precio', 'header' => 'Precio', 'type' => 'text' ],
+            ],
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreProductoRequest $request)
     {
-        //
+        $producto = $request->save();
+        return response()->json(['message' => 'Producto creado correctamente'], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Producto $producto)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Producto $producto)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateProductoRequest $request, Producto $producto)
     {
-        //
+        $producto = $request->update($producto);
+        return response()->json(['message' => 'Producto actualizado correctamente'], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Producto $producto)
     {
-        //
+        $producto->delete();
+        return response()->json(['message' => 'Producto eliminado correctamente'], 200);
     }
 }

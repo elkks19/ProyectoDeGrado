@@ -30,11 +30,11 @@ class RoleController extends Controller
         return response()->json([
             'data' => $roles,
             'columns' => [
-                [ 'field' => 'id', 'header' => 'ID'],
-                [ 'field' => 'name', 'header' => 'Nombre'],
-                [ 'field' => 'created_at', 'header' => 'Fecha de Creación'],
-                [ 'field' => 'updated_at', 'header' => 'Ultima Actualización'],
-                [ 'field' => 'deleted_at', 'header' => 'Fecha de Eliminación'],
+                [ 'field' => 'id', 'header' => 'ID', 'type' => 'text' ],
+                [ 'field' => 'name', 'header' => 'Nombre', 'type' => 'text'],
+                [ 'field' => 'created_at', 'header' => 'Fecha de Creación', 'type' => 'date'],
+                [ 'field' => 'updated_at', 'header' => 'Ultima Actualización', 'type' => 'date'],
+                [ 'field' => 'deleted_at', 'header' => 'Fecha de Eliminación', 'type' => 'text' ],
             ],
             'createColumns' => [
                 [ 'field' => 'name', 'header' => 'Nombre', 'type' => 'text' ],

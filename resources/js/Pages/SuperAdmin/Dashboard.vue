@@ -262,18 +262,20 @@ export default {
 
                 <Column :key="col.field" :field="col.field" :header="col.header" sortable v-if="col.type === 'text'"/>
 
-                <Column :key="col.field" :field="col.field" :header="col.header" v-if="col.type === 'status'" class="flex justify-center" >
-                    <template #body="slotProps">
-                        <!-- <Tag :value="slotProps.data.deleted_at == null ? 'ACTIVO' : 'INACTIVO' " :severity="getSeverity(slotProps.data.deleted_at)" class="w-9/12 text-lg" /> -->
-                        <Tag value="a" severity="danger" class="w-9/12 text-lg" />
-                    </template>
-                </Column>
-
+                
             </div>
 
-
+            <Column key="a" field="deleted_at" header="Estado"  class="flex justify-center" >
+                <template #body="slotProps">
+                    <Tag :value="slotProps.data.deleted_at == null ? 'ACTIVO' : 'INACTIVO' " :severity="getSeverity(slotProps.data.deleted_at)" class="w-9/12 text-lg" />
+                    <!-- <Tag value="a" severity="danger" class="w-9/12 text-lg" /> -->
+                </template>
+            </Column>
+            
+            
         </DataTable>
     </div>
+    <!--<Column :key="col.field" :field="col.field" :header="col.header"  class="flex justify-center" >-->
 </div>
 
 
