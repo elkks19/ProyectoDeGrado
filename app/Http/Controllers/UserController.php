@@ -8,12 +8,15 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Validation\Rules;
+
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(): JsonResponse
     {
         $users = User::withTrashed()->get()->except(Auth::id());
@@ -23,66 +26,66 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'role' => $user->role,
+                'roles' => $user->getRoleNames(),
+                'fechaNacimiento' => $user->fechaNacimiento->format('Y-m-d'),
+                'ci' => $user->ci,
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
-                'deleted_at' => $user->deleted_at == null ? "aun no eliminado" : $user->deleted_at->format('Y-m-d H:i:s'),
+                'deleted_at' => $user->deleted_at == null ? null : $user->deleted_at->format('Y-m-d H:i:s'),
             ];
         });
 
         return response()->json([
             'data' => $users,
             'columns' => [
-                [ 'field' => 'id', 'header' => 'ID'],
-                [ 'field' => 'name', 'header' => 'Nombre'],
-                [ 'field' => 'email', 'header' => 'Email'],
-                [ 'field' => 'role', 'header' => 'Rol'],
-                [ 'field' => 'created_at', 'header' => 'Fecha de Creación'],
-                [ 'field' => 'updated_at', 'header' => 'Ultima Actualización'],
-                [ 'field' => 'deleted_at', 'header' => 'Fecha de Eliminación'],
+                [ 'field' => 'id', 'header' => 'ID', 'type' => 'text'],
+                [ 'field' => 'name', 'header' => 'Nombre', 'type' => 'text'],
+                [ 'field' => 'ci', 'header' => 'Carnet de Identidad', 'type' => 'text'],
+                [ 'field' => 'email', 'header' => 'Email', 'type' => 'email'],
+                [ 'field' => 'role', 'header' => 'Rol', 'type' => 'chips'],
+                [ 'field' => 'fechaNacimiento', 'header' => 'Fecha de Nacimiento', 'type' => 'text'],
+                [ 'field' => 'created_at', 'header' => 'Fecha de Creación', 'type' => 'text'],
+                [ 'field' => 'updated_at', 'header' => 'Ultima Actualización', 'type' => 'text'],
+                [ 'field' => 'deleted_at', 'header' => 'Fecha de Eliminación', 'type' => 'status'],
             ],
             'createColumns' => [
                 [ 'field' => 'name', 'header' => 'Nombre', 'type' => 'text' ],
                 [ 'field' => 'email', 'header' => 'Email', 'type' => 'email' ],
+                [ 'field' => 'ci', 'header' => 'Carnet de Identidad', 'type' => 'text' ],
+                [ 'field' => 'fechaNacimiento', 'header' => 'Fecha de Nacimiento', 'type' => 'date' ],
                 [ 'field' => 'role', 'header' => 'Rol', 'type' => 'select', 'options' => Role::All()->pluck('name') ],
                 [ 'field' => 'password', 'header' => 'Contraseña', 'type' => 'password' ],
                 [ 'field' => 'password_confirmation', 'header' => 'Confirmar Contraseña', 'type' => 'password' ],
             ],
             'editColumns' => [
-                [ 'field' => 'name', 'header' => 'Nombre'],
-                [ 'field' => 'email', 'header' => 'Email'],
-                [ 'field' => 'role', 'header' => 'Rol'],
+                [ 'field' => 'name', 'header' => 'Nombre', 'type' => 'text' ],
+                [ 'field' => 'email', 'header' => 'Email', 'type' => 'email' ],
+                [ 'field' => 'ci', 'header' => 'Carnet de Identidad', 'type' => 'text' ],
+                [ 'field' => 'fechaNacimiento', 'header' => 'Fecha de Nacimiento', 'type' => 'date' ],
+                [ 'field' => 'role', 'header' => 'Rol', 'type' => 'select', 'options' => Role::All()->pluck('name') ],
             ],
         ]);
     }
 
-    public function show(string $id)
+    public function store(StoreUserRequest $request)
     {
-        //
+        $user = $request->save();
+
+        event(new Registered($user));
+
+        return response()->json(['message' => 'User created'], 201);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+
+    public function update(UpdateUserRequest $request, User $user)
     {
-        //
+        $request->update($user);
+        return response()->json(['message' => 'User updated'], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        $user = User::find($id);
         $user->delete();
         return response()->json(['message' => 'User deleted'], 200);
     }

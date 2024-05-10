@@ -7,73 +7,46 @@ use App\Http\Requests\UpdateOrdenRequest;
 use App\Models\Orden;
 
 use Inertia\Inertia;
+use App\EstadosOrden;
 
 class OrdenController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $columns = [
-            'id',
-            'usuario',
-            'envio',
-            'pago',
-            'estado'
-        ];
-
-        $data = Orden::with('productos')->get();
+        $ordenes = Orden::with('productos')->get();
 
         return response()->json([
-            'data' => $data,
-            'columns' => $columns
+            'data' => $ordenes,
+            'columns' => [
+                [ 'field' => 'id', 'header' => 'ID' ],
+                [ 'field' => 'estado', 'header' => 'Estado' ],
+                [ 'field' => 'pago', 'header' => 'Pago' ],
+                [ 'field' => 'envio', 'header' => 'Envio' ],
+            ],
+            'createColumns' => [
+                [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'select', 'options' => EstadosOrden::all() ],
+                [ 'field' => 'pago', 'header' => 'Pago', 'type' => '' ],
+                [ 'field' => 'envio', 'header' => 'Envio', 'type' => 'button' ],
+            ],
+
+            'editColumns' => [
+                [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'select', 'options' => EstadosOrden::all() ],
+                [ 'field' => 'pago', 'header' => 'Pago', 'type' => 'text' ],
+                [ 'field' => 'envio', 'header' => 'Envio', 'type' => 'text' ],
+            ]
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreOrdenRequest $request)
     {
         $orden = $request->save();
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Orden $orden)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Orden $orden)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateOrdenRequest $request, Orden $orden)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Orden $orden)
     {
         //

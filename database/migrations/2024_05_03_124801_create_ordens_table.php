@@ -7,16 +7,15 @@ use Illuminate\Support\Facades\Schema;
 use App\Models\Pago;
 use App\Models\Envio;
 
+use App\EstadosOrden;
+
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('ordenes', function (Blueprint $table) {
             $table->id();
-            $table->string('estado', 20);
+            $table->enum('estado', ['pendiente', 'procesando', 'enviado', 'entregado'])->default(EstadosOrden::PENDIENTE->value);
             $table->foreignIdFor(Pago::class)->constrained('pagos', 'id');
             $table->foreignIdFor(Envio::class)->constrained('envios', 'id');
             $table->timestamps();
@@ -24,9 +23,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('ordenes');

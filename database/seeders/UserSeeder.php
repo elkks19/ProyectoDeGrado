@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
             'name' => 'Rafael Fabiani',
             'email' => 'rafafabiani1909@gmail.com',
             'password' => Hash::make('asdf1234'),
+            'fechaNacimiento' => '2003-09-19',
             'ci' => '9101085'
         ])->assignRole('superAdmin');
 
@@ -26,6 +27,7 @@ class UserSeeder extends Seeder
             'name' => 'Prueba',
             'email' => 'prueba@prueba.com',
             'password' => Hash::make('prueba'),
+            'fechaNacimiento' => '2000-01-01',
             'ci' => '9101010'
         ])->assignRole('usuario');
 
@@ -33,14 +35,16 @@ class UserSeeder extends Seeder
             'name' => 'Prueba 2',
             'email' => 'otraprueba@prueba.com',
             'password' => Hash::make('prueba'),
+            'fechaNacimiento' => '2024-04-27',
             'ci' => '12341234'
-        ])->assignRole('usuario');
+        ])->syncRoles(['usuario', 'personal']);
 
         User::create([
             'name' => 'Prueba 3',
             'email' => 'otraprueba2@prueba.com',
             'password' => Hash::make('prueba'),
+            'fechaNacimiento' => '2002-02-11',
             'ci' => '910812'
-        ])->assignROle('personal');
+        ])->assignRole('personal')->delete();
     }
 }

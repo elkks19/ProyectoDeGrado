@@ -11,15 +11,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+use App\EstadosOrden;
+
 class Orden extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $table = 'ordenes';
-
-    protected $attributes = [
-        'estado' => 'pendiente',
-    ];
 
     protected $fillable = [
         'estado',
@@ -43,5 +41,14 @@ class Orden extends Model
     public function envio(): HasOne
     {
         return $this->hasOne(Envio::class);
+    }
+
+    public function casts(): array
+    {
+        return [
+            'created_at' => 'datetime:Y-m-d',
+            'updated_at' => 'datetime:Y-m-d',
+            'estado' => EstadosOrden::class,
+        ];
     }
 }

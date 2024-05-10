@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'fechaNacimiento',
         'ci'
     ];
 
@@ -33,6 +34,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'fechaNacimiento' => 'date',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
