@@ -5,6 +5,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\EnvioController;
+use App\Http\Controllers\DetalleOrdenController;
 
 Route::group(['middleware' => 'role:superAdmin'], function () {
     Route::get('/dashboard', function () {

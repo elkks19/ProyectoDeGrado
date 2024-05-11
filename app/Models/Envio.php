@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\EstadosEnvio;
+
 class Envio extends Model
 {
     use HasFactory, SoftDeletes;
-
-    public $timestamps = false;
 
     protected $table = 'envios';
 
@@ -33,6 +33,7 @@ class Envio extends Model
         return [
             'fechaEnvio' => 'datetime',
             'fechaRecepcion' => 'datetime',
+            'estado' => EstadosEnvio::class
         ];
     }
 

@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+use App\EstadosEnvio;
+
 return new class extends Migration
 {
     /**
@@ -16,8 +18,9 @@ return new class extends Migration
             $table->string('direccion', 120);
             $table->dateTime('fechaEnvio')->nullable();
             $table->dateTime('fechaRecepcion')->nullable();
-            $table->string('estado', 20);
+            $table->enum('estado', EstadosEnvio::all())->default(EstadosEnvio::PENDIENTE->value);
             $table->float('precio', 2);
+            $table->timestamps();
             $table->softDeletes();
         });
     }

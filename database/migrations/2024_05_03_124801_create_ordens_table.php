@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('ordenes', function (Blueprint $table) {
             $table->id();
-            $table->enum('estado', ['pendiente', 'procesando', 'enviado', 'entregado'])->default(EstadosOrden::PENDIENTE->value);
+            $table->enum('estado', EstadosOrden::all())->default(EstadosOrden::PENDIENTE->value);
             $table->foreignIdFor(Pago::class)->constrained('pagos', 'id');
             $table->foreignIdFor(Envio::class)->constrained('envios', 'id');
             $table->timestamps();

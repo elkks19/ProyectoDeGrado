@@ -256,7 +256,7 @@ export default {
 
                 <Column :key="col.field" :field="col.field" :header="col.header" sortable v-if="col.type === 'chips'">
                     <template #body="slotProps">
-                        <Chip v-for="rol in slotProps.data.roles" :label="rol" />
+                        <Chip v-for="rol in slotProps.data[col.field]" :label="rol" />
                     </template>
                 </Column>
 
