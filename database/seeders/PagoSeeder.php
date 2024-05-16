@@ -8,6 +8,8 @@ use Illuminate\Support\Carbon;
 
 use App\Models\Pago;
 
+use App\EstadosPago;
+
 class PagoSeeder extends Seeder
 {
     /**
@@ -18,35 +20,35 @@ class PagoSeeder extends Seeder
         Pago::create([
             'monto' => 100.0,
             'fechaPago' => Carbon::now(),
-            'estado' => 'Pagado',
+            'estado' => EstadosPago::ACEPTADO,
             'divisa_id' => 1,
             'metodo_pago_id' => 1,
         ]);
         Pago::create([
             'monto' => 80.0,
             'fechaPago' => Carbon::now(),
-            'estado' => 'Pagado',
+            'estado' => EstadosPago::ACEPTADO,
             'divisa_id' => 1,
             'metodo_pago_id' => 1,
         ]);
         Pago::create([
             'monto' => 60.0,
             'fechaPago' => Carbon::now(),
-            'estado' => 'Pagado',
+            'estado' => EstadosPago::PROCESANDO,
             'divisa_id' => 1,
             'metodo_pago_id' => 2,
         ]);
         Pago::create([
             'monto' => 50.0,
-            'estado' => 'pendiente',
+            'estado' => EstadosPago::PENDIENTE,
         ]);
         Pago::create([
             'monto' => 40.0,
-            'estado' => 'pendiente',
+            'estado' => EstadosPago::PENDIENTE,
         ]);
         Pago::create([
             'monto' => 80.0,
-            'estado' => 'pendiente',
+            'estado' => EstadosPago::PENDIENTE,
         ]);
     }
 }

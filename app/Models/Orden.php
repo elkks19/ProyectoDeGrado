@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -19,13 +18,17 @@ class Orden extends Model
 
     protected $table = 'ordenes';
 
+    protected $attributes = [
+        'estado' => EstadosOrden::PENDIENTE->value,
+    ];
+
     protected $fillable = [
         'estado',
     ];
 
-    public function pago(): HasOne
+    public function pago(): BelongsTo
     {
-        return $this->hasOne(Pago::class);
+        return $this->belongsTo(Pago::class);
     }
 
     public function usuario(): BelongsTo
@@ -38,9 +41,9 @@ class Orden extends Model
         return $this->belongsToMany(Producto::class, 'detalles_de_orden');
     }
 
-    public function envio(): HasOne
+    public function envio(): BelongsTo
     {
-        return $this->hasOne(Envio::class);
+        return $this->belongsTo(Envio::class);
     }
 
     public function casts(): array

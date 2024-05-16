@@ -30,12 +30,18 @@ class StoreUserRequest extends FormRequest
             'fechaNacimiento' => 'required|date',
             'ci' => 'required|numeric|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'roles' => 'required|array',
         ];
     }
 
     public function save(): User
     {
         $user = User::create($this->validated());
+
+        foreach ($this->roles as $role) {
+            $user->assignRole($role);
+        }
+
         return $user;
     }
 }

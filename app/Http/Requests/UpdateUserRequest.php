@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class UpdateUserRequest extends FormRequest
@@ -24,15 +25,32 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => 'string|max:255',
-            'email' => 'string|lowercase|email|max:255|unique:'.User::class.',email,'.$this->id,
+            'email' => 'string|email|max:255|unique:'.User::class.',email,'.$this->id,
             'ci' => 'numeric|unique:'.User::class.',ci,'.$this->id,
             'fechaNacimiento' => 'date|before:today',
+            'password' => 'string|max:255',
+            'roles' => 'array',
         ];
     }
 
     public function update(User $user): User
     {
-        $user->update($this->validated());
+        if ($this->password) {
+            $user->update(['password' => Hash::make($this->password)]);
+        }
+
+        $user->update([
+            'name' => $this->name,
+            'email' => $this->email,
+            'ci' => $this->ci,
+            'fechaNacimiento' => $this->fechaNacimiento,
+        ]);
+
+
+        $user->syncRoles($this->roles);
+
+        $user->save();
+
         return $user;
     }
 }

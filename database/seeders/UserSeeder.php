@@ -40,11 +40,21 @@ class UserSeeder extends Seeder
         ])->syncRoles(['usuario', 'personal']);
 
         User::create([
+            'name' => 'Prueba 4',
+            'email' => 'otrapruebaa@prueba.com',
+            'password' => Hash::make('prueba'),
+            'fechaNacimiento' => '2024-04-27',
+            'ci' => '19203491'
+        ])->syncRoles(['usuario']);
+
+        User::create([
             'name' => 'Prueba 3',
             'email' => 'otraprueba2@prueba.com',
             'password' => Hash::make('prueba'),
             'fechaNacimiento' => '2002-02-11',
             'ci' => '910812'
         ])->assignRole('personal')->delete();
+
+        User::factory(100)->create();
     }
 }

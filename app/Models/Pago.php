@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
+use App\EstadosPago;
 
 class Pago extends Model
 {
@@ -15,7 +18,7 @@ class Pago extends Model
     protected $table = 'pagos';
 
     protected $attributes = [
-        'estado' => 'pendiente',
+        'estado' => EstadosPago::PENDIENTE->value,
     ];
 
     protected $fillable = [
@@ -28,12 +31,13 @@ class Pago extends Model
     {
         return [
             'fechaPago' => 'datetime',
+            'estado' => EstadosPago::class,
         ];
     }
 
-    public function orden(): BelongsTo
+    public function orden(): HasOne
     {
-        return $this->belongsTo(Orden::class);
+        return $this->hasOne(Orden::class);
     }
 
     public function metodoPago(): BelongsTo

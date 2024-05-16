@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 use App\Models\Pago;
 use App\Models\Envio;
+use App\Models\User;
 
 use App\EstadosOrden;
 
@@ -18,6 +19,7 @@ return new class extends Migration
             $table->enum('estado', EstadosOrden::all())->default(EstadosOrden::PENDIENTE->value);
             $table->foreignIdFor(Pago::class)->constrained('pagos', 'id');
             $table->foreignIdFor(Envio::class)->constrained('envios', 'id');
+            $table->foreignIdFor(User::class)->constrained('users', 'id');
             $table->timestamps();
             $table->softDeletes();
         });

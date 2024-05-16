@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Schema;
 use App\Models\Divisa;
 use App\Models\MetodoPago;
 
+use App\EstadosPago;
+
 return new class extends Migration
 {
     /**
@@ -18,7 +20,7 @@ return new class extends Migration
             $table->id();
             $table->float('monto', 2);
             $table->dateTime('fechaPago')->nullable();
-            $table->string('estado', 20);
+            $table->enum('estado', EstadosPago::all())->default(EstadosPago::PENDIENTE->value);
             $table->foreignIdFor(Divisa::class)->nullable()->constrained('divisas', 'id');
             $table->foreignIdFor(MetodoPago::class)->nullable()->constrained('divisas', 'id');
             $table->timestamps();

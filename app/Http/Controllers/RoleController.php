@@ -15,7 +15,18 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $roles = Role::withTrashed()->where('id', '!=', Auth::id())->get();
+        $roles = Role::where('id', '!=', Auth::id())->get();
+        $deletedRoles = Role::onlyTrashed()->get();
+
+        $deletedRoles = $deletedRoles->map(function ($role) {
+            return [
+                'id' => $role->id,
+                'name' => $role->name,
+                'created_at' => $role->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $role->updated_at->format('Y-m-d H:i:s'),
+                'deleted_at' => $role->deleted_at == null ? null : $role->deleted_at->format('Y-m-d H:i:s'),
+            ];
+        });
 
         $roles = $roles->map(function ($role) {
             return [
@@ -29,6 +40,7 @@ class RoleController extends Controller
 
         return response()->json([
             'data' => $roles,
+            'deletedData' => $deletedRoles,
             'columns' => [
                 [ 'field' => 'id', 'header' => 'ID', 'type' => 'text' ],
                 [ 'field' => 'name', 'header' => 'Nombre', 'type' => 'text'],
@@ -59,8 +71,15 @@ class RoleController extends Controller
     }
 
 
-    public function destroy(Role $role)
+    public function destroy(int $id)
     {
+        $role = Role::withTrashed()->find($id);
+
+        if($role->trashed()){
+            $role->restore();
+            return response()->json(['message' => 'Rol restaurado correctamente'], 200);
+        }
+
         $role->delete();
         return response()->json(['message' => 'Rol eliminado correctamente'], 200);
     }

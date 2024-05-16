@@ -11,7 +11,7 @@ class UpdateCategoriaRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,14 @@ class UpdateCategoriaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nombre' => 'required|string|max:255|unique:categorias,nombre',
         ];
+    }
+
+    public function update(Categoria $categoria): Categoria
+    {
+        $categoria->update($this->validated());
+
+        return $categoria;
     }
 }

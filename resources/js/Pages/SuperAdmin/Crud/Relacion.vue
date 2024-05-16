@@ -7,6 +7,7 @@ import MultiSelect from 'primevue/multiselect';
 import Password from 'primevue/password';
 import FloatLabel from 'primevue/floatlabel'
 import Dropdown from 'primevue/dropdown';
+import Chip from 'primevue/chip';
 </script>
 
 <script>
@@ -41,7 +42,7 @@ export default {
 </script>
 
 <template>
-    <Dialog v-model:visible="visible" modal header="Editar registro" @update:visible="cancelar()" dismissableMask >
+    <Dialog v-model:visible="visible" modal header="Editar datos de la relacion" @update:visible="cancelar()" dismissableMask >
 
         <div class="w-full flex flex-col space-y-8 mt-7 mb-1">
 
@@ -59,7 +60,6 @@ export default {
                 <Dropdown :id="col.field" :options="col.options" class="w-full" v-if="col.type === 'select'" v-model="editableData[col.field]" />
 
                 <Password :feedback="false" :inputId="col.field"  class="w-full" toggleMask v-model="editableData[col.field]" v-if="col.type === 'password'" />
-
 
                 <label :for="col.field" class="font-semibold"> {{ col.header }} </label>
 

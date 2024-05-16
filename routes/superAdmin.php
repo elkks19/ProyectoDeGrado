@@ -7,6 +7,7 @@ use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\EnvioController;
 use App\Http\Controllers\DetalleOrdenController;
+use App\Http\Controllers\CategoriaController;
 
 Route::group(['middleware' => 'role:superAdmin'], function () {
     Route::get('/dashboard', function () {
@@ -26,6 +27,8 @@ Route::group(['middleware' => 'role:superAdmin'], function () {
     Route::apiResource('detalle-ordenes', DetalleOrdenController::class);
     // TABLA ENVIOS
     Route::apiResource('envios', EnvioController::class);
+    // TABLA CATEGORIAS
+    Route::apiResource('categorias', CategoriaController::class);
 
 });
 

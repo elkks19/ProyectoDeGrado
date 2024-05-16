@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\EstadosEnvio;
@@ -17,7 +17,7 @@ class Envio extends Model
     protected $table = 'envios';
 
     protected $attributes = [
-        'estado' => 'pendiente',
+        'estado' => EstadosEnvio::PENDIENTE->value,
     ];
 
     protected $fillable = [
@@ -37,8 +37,8 @@ class Envio extends Model
         ];
     }
 
-    public function orden(): BelongsTo
+    public function orden(): HasOne
     {
-        return $this->belongsTo(Orden::class);
+        return $this->hasOne(Orden::class);
     }
 }
