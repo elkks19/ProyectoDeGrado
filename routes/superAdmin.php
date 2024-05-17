@@ -6,7 +6,6 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\EnvioController;
-use App\Http\Controllers\DetalleOrdenController;
 use App\Http\Controllers\CategoriaController;
 
 Route::group(['middleware' => 'role:superAdmin'], function () {
@@ -23,8 +22,6 @@ Route::group(['middleware' => 'role:superAdmin'], function () {
     Route::apiResource('ordenes', OrdenController::class);
     // TABLA PRODUCTOS
     Route::apiResource('productos', ProductoController::class);
-    // TABLA DETALLE ORDENES
-    Route::apiResource('detalle-ordenes', DetalleOrdenController::class);
     // TABLA ENVIOS
     Route::apiResource('envios', EnvioController::class);
     // TABLA CATEGORIAS

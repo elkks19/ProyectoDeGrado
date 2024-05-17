@@ -24,6 +24,7 @@ class Orden extends Model
 
     protected $fillable = [
         'estado',
+        'user_id',
     ];
 
     public function pago(): BelongsTo

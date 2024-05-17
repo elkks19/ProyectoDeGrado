@@ -43,64 +43,36 @@ export default {
 
             tablas: [
                 {
-                    title: 'usuarios',
+                    title: 'Usuarios',
                     url: '/users',
-                    options: {
-                        create: true,
-                        edit: true,
-                        delete: true,
-                        extra: true,
-                    },
                 },
                 {
-                    title: 'roles',
+                    title: 'Roles',
                     url: '/roles',
-                    options: {
-                        create: true,
-                        edit: true,
-                        delete: true,
-                        extra: true,
-                    },
                 },
                 {
-                    title: 'ordenes',
+                    title: 'Ordenes',
                     url: '/ordenes',
-                    options: {
-                        create: true,
-                        edit: true,
-                        delete: true,
-                        extra: true,
-                    },
                 },
                 {
-                    title: 'productos',
+                    title: 'Productos',
                     url: '/productos',
-                    options: {
-                        create: true,
-                        edit: true,
-                        delete: true,
-                        extra: true,
-                    },
                 },
                 {
-                    title: 'envios',
-                    url: '/envios',
-                    options: {
-                        create: true,
-                        edit: true,
-                        delete: true,
-                        extra: true,
-                    },
-                },
-                {
-                    title: 'categorias',
+                    title: 'Categorias',
                     url: '/categorias',
-                    options: {
-                        create: true,
-                        edit: true,
-                        delete: true,
-                        extra: true,
-                    },
+                },
+                {
+                    title: 'Reviews',
+                    url: '/reviews',
+                },
+                {
+                    title: 'Divisas',
+                    url: '/divisas',
+                },
+                {
+                    title: 'Metodos de Pago',
+                    url: '/metodos-de-pago',
                 },
             ],
 
@@ -113,6 +85,8 @@ export default {
             createColumns: [],
             editColumns: [],
             relationColumns: [],
+            relationOptions: [],
+            relationId: null,
         }
     },
     methods: {
@@ -269,16 +243,17 @@ export default {
             this.relationData = data;
             this.relation1x1 = true;
         },
-        editarRelacionmxn(data, columns){
-            this.$refs.relationmxnModal.editableData = data;
-            this.relationColumns = columns;
-            this.relationData = data;
-            this.relation1xm = true;
-        },
         editarRelacion1xm(data, columns){
             this.$refs.relation1xmModal.editableData = data;
             this.relationColumns = columns;
             this.relationData = data;
+            this.relation1xm = true;
+        },
+        editarRelacionmxn(data, options, id){
+            this.$refs.relationmxnModal.editableData = data;
+            this.relationOptions = options;
+            this.relationData = data;
+            this.relationId = id;
             this.relationmxn = true;
         },
 
@@ -368,7 +343,7 @@ export default {
 
                 <Column :key="col.field" :field="col.field" :header="col.header" sortable v-if="col.type === 'mxn'" >
                     <template #body="slotProps">
-                        <Button label="Ver" icon="pi pi-eye" class="p-button-rounded p-button-text p-button-sm" @click="editarRelacionmxn(slotProps.data[col.field], col.data)"/>
+                        <Button label="Ver" icon="pi pi-eye" class="p-button-rounded p-button-text p-button-sm" @click="editarRelacionmxn(slotProps.data[col.field], col.options, slotProps.data.id)"/>
                     </template>
                 </Column>
 
@@ -399,12 +374,15 @@ export default {
 <!--DIALOGO PARA EDITAR-->
 <Editar ref="editModal" :visible="edit" :columns="editColumns" @canceled="notUpdated()" @confirmed="updated()" :table="selectedTable" />
 
+
 <!--DIALOGO PARA EDITAR RELACIONES-->
 <Relacion1x1 ref="relation1x1Modal" :visible="relation1x1" :columns="relationColumns" :data="relationData" @canceled="relationNotUpdated()" @confirmed="relationUpdated()" />
 
 <Relacion1xm ref="relation1xmModal" :visible="relation1xm" :columns="relationColumns" :data="relationData" @canceled="relationNotUpdated()" @confirmed="relationUpdated()" />
 
-<Relacionmxn ref="relationmxnModal" :visible="relationmxn" :columns="relationColumns" :data="relationData" @canceled="relationNotUpdated()" @confirmed="relationUpdated()" />
+<Relacionmxn ref="relationmxnModal" :visible="relationmxn" :data="relationData" @canceled="relationNotUpdated()" @confirmed="relationUpdated()" :options="relationOptions"
+    :table="selectedTable" :id="relationId" />
+
 
 <!--TOAST-->
 <Toast/>

@@ -7,6 +7,8 @@ import MultiSelect from 'primevue/multiselect';
 import Password from 'primevue/password';
 import FloatLabel from 'primevue/floatlabel'
 import Dropdown from 'primevue/dropdown';
+
+import Relacion1x1 from '@/Pages/SuperAdmin/Crud/Relacion1x1.vue';
 </script>
 
 <script>
@@ -57,7 +59,7 @@ export default {
                 <MultiSelect :id="col.field" :options="col.options" class="w-full" v-if="col.type === 'multiselect'" display="chip" v-model="newData[col.field]"
                 :maxSelectedValues="2" />
 
-                <Dropdown :id="col.field" :options="col.options" class="w-full" v-if="col.type === 'select'" v-model="newData[col.field]" />
+                <Dropdown :id="col.field" :options="col.options" class="w-full" v-if="col.type === 'select'" v-model="newData[col.field]" filter />
 
                 <Password :feedback="false" :inputId="col.field"  class="w-full" toggleMask v-model="newData[col.field]" v-if="col.type === 'password'" />
 
@@ -66,8 +68,6 @@ export default {
 
             </FloatLabel>
 
-            <Button v-if="col.type === 'button'" label="Editar" @click="col.action(newData)" />
-
         </div>
 
         <template #footer>
@@ -75,5 +75,6 @@ export default {
             <Button label="Guardar" outlined severity="secondary" @click="store()" autofocus />
         </template>
     </Dialog>
+
 </template>
 

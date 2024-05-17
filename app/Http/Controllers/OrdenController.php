@@ -7,6 +7,8 @@ use App\Http\Requests\UpdateOrdenRequest;
 use App\Models\Orden;
 use App\Models\User;
 use App\Models\Producto;
+use App\Models\Divisa;
+use App\Models\MetodoPago;
 
 use Inertia\Inertia;
 use App\EstadosOrden;
@@ -25,26 +27,30 @@ class OrdenController extends Controller
                 'id' => $orden->id,
                 'estado' => [$orden->estado],
                 'usuario' => $orden->user->name,
+
                 'pago' => [
-                    'monto' => $orden->pago->monto,
-                    'estado' => $orden->pago->estado,
-                    'fechaPago' => $orden->pago->fechaPago,
-                    'divisa' => optional($orden->pago->divisa)->nombre,
-                    'metodoPago' => optional($orden->pago->metodoPago)->nombre,
+                    'monto' => $orden->pago?->monto,
+                    'estado' => $orden->pago?->estado,
+                    'fechaPago' => $orden->pago?->fechaPago,
+                    'divisa' => $orden->pago?->divisa?->nombre,
+                    'metodoPago' => $orden->pago?->metodoPago?->nombre,
                 ],
                 'envio' => [
-                    'direccion' => $orden->envio->direccion,
-                    'fechaEnvio' => optional($orden->envio->fechaEnvio)->format('Y-m-d H:i:s'),
-                    'fechaRecepcion' => optional($orden->envio->fechaRecepcion)->format('Y-m-d H:i:s'),
-                    'estado' => $orden->envio->estado,
-                    'precio' => $orden->envio->precio,
-                    'created_at' => $orden->envio->created_at->format('Y-m-d H:i:s'),
-                    'updated_at' => $orden->envio->updated_at->format('Y-m-d H:i:s'),
-                    'deleted_at' => optional($orden->envio->deleted_at)->format('Y-m-d H:i:s'),
+                    'direccion' => $orden->envio?->direccion,
+                    'fechaEnvio' => $orden->envio?->fechaEnvio?->format('Y-m-d H:i:s'),
+                    'fechaRecepcion' => $orden->envio?->fechaRecepcion?->format('Y-m-d H:i:s'),
+                    'estado' => $orden->envio?->estado,
+                    'precio' => $orden->envio?->precio,
+                    'created_at' => $orden->envio?->created_at?->format('Y-m-d H:i:s'),
+                    'updated_at' => $orden->envio?->updated_at?->format('Y-m-d H:i:s'),
+                    'deleted_at' => $orden->envio?->deleted_at?->format('Y-m-d H:i:s'),
                 ],
-                'created_at' => $orden->envio->created_at->format('Y-m-d H:i:s'),
-                'updated_at' => $orden->envio->updated_at->format('Y-m-d H:i:s'),
-                'deleted_at' => optional($orden->envio->deleted_at)->format('Y-m-d H:i:s'),
+
+                'productos' => $orden->productos->pluck('nombre'),
+
+                'created_at' => $orden->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $orden->updated_at->format('Y-m-d H:i:s'),
+                'deleted_at' => $orden->deleted_at?->format('Y-m-d H:i:s'),
             ];
         });
 
@@ -70,6 +76,9 @@ class OrdenController extends Controller
                     'updated_at' => $orden->envio->updated_at->format('Y-m-d H:i:s'),
                     'deleted_at' => optional($orden->envio->deleted_at)->format('Y-m-d H:i:s'),
                 ],
+
+                'productos' => $orden->productos->pluck('nombre'),
+
                 'created_at' => $orden->envio->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $orden->envio->updated_at->format('Y-m-d H:i:s'),
                 'deleted_at' => optional($orden->envio->deleted_at)->format('Y-m-d H:i:s'),
@@ -110,7 +119,15 @@ class OrdenController extends Controller
             'createColumns' => [
                 [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'select', 'options' => EstadosOrden::all() ],
                 [ 'field' => 'user', 'header' => 'Usuario', 'type' => 'select', 'options' => User::all()->pluck('name') ],
-                [ 'field' => 'pago', 'header' => 'Pago', 'type' => 'button' ],
+                [ 'field' => 'pago', 'header' => 'Pago', 'type' => '1x1', 'url' => '/pagos',
+                    'columns' =>[
+                        'monto' => [ 'field' => 'monto', 'header' => 'Monto', 'type' => 'text' ],
+                        'estado' => [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'select', 'options' => EstadosPago::all() ],
+                        'fechaPago' => [ 'field' => 'fechaPago', 'header' => 'Fecha de Pago', 'type' => 'date' ],
+                        'divisa' => [ 'field' => 'divisa', 'header' => 'Divisa', 'type' => 'select', 'options' => Divisa::all()->pluck('nombre') ],
+                        'metodoPago' => [ 'field' => 'metodoPago', 'header' => 'Metodo de Pago', 'type' => 'select', 'options' => MetodoPago::all()->pluck('nombre') ]
+                    ]
+                ],
                 [ 'field' => 'envio', 'header' => 'Envio', 'type' => 'text' ],
             ],
 
@@ -124,11 +141,14 @@ class OrdenController extends Controller
 
     public function store(StoreOrdenRequest $request)
     {
-        $orden = $request->save();
+        $orden = $request->store();
+        return response()->json(['message' => 'Orden creada correctamente.'], 201);
     }
 
     public function update(UpdateOrdenRequest $request, Orden $orden)
     {
+        $orden = $request->update($orden);
+        return response()->json(['message' => 'Orden actualizada correctamente.'], 200);
     }
 
     public function destroy(int $id)
