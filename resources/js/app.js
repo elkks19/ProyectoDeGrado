@@ -1,11 +1,6 @@
 import './bootstrap';
 import '../css/app.css';
 import "primeicons/primeicons.css";
-// import 'primevue/resources/primevue.min.css';
-// import 'primevue/resources/themes/aura-dark-amber/theme.css'
-// import 'primevue/resources/themes/aura-light-blue/theme.css'
-// import 'primevue/resources/themes/aura-dark-cyan/theme.css'
-
 
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
@@ -14,6 +9,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
 import PrimeVue from "primevue/config";
 import Lara from '../css/presets/lara'
+
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 
@@ -28,7 +24,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(PrimeVue, {
-                unstyled: true,
+                unstyled: false,
                 pt: Lara
             })
             .use(ConfirmationService)

@@ -17,7 +17,9 @@ import Crear from '@/Pages/SuperAdmin/Crud/Crear.vue';
 import Editar from '@/Pages/SuperAdmin/Crud/Editar.vue';
 import Eliminar from '@/Pages/SuperAdmin/Crud/Eliminar.vue';
 import Restaurar from '@/Pages/SuperAdmin/Crud/Restaurar.vue';
-import Relacion from '@/Pages/SuperAdmin/Crud/Relacion.vue';
+import Relacion1x1 from '@/Pages/SuperAdmin/Crud/Relacion1x1.vue';
+import Relacion1xm from '@/Pages/SuperAdmin/Crud/Relacion1xm.vue';
+import Relacionmxn from '@/Pages/SuperAdmin/Crud/Relacionmxn.vue';
 </script>
 
 <script>
@@ -27,7 +29,10 @@ export default {
             create: false,
             edit: false,
             showDeleted: false,
-            relation: false,
+
+            relation1x1: false,
+            relation1xm: false,
+            relationmxn: false,
 
             selectedRows: [],
             selectedRow: null,
@@ -219,12 +224,16 @@ export default {
         },
 
         relationUpdated() {
-            this.relation = false;
+            this.relation1x1 = false;
+            this.relation1xm = false;
+            this.relationmxn = false;
             this.$toast.add({ severity: 'success', summary: 'Actualizado', detail: 'Haz editado la relación correctamente', life: 3000 });
             this.refreshDataTable();
         },
-        relacionNotUpdated() {
-            this.relation = false;
+        relationNotUpdated() {
+            this.relation1x1 = false;
+            this.relation1xm = false;
+            this.relationmxn = false;
             this.$toast.add({ severity: 'error', summary: 'Cancelado', detail: 'Edición de la relación cancelada', life: 3000 });
         },
 
@@ -254,11 +263,23 @@ export default {
         },
 
         // PARA EDITAR LAS RELACIONES
-        editarRelacion(data, columns){
-            this.$refs.relationModal.editableData = data;
+        editarRelacion1x1(data, columns){
+            this.$refs.relation1x1Modal.editableData = data;
             this.relationColumns = columns;
             this.relationData = data;
-            this.relation = true;
+            this.relation1x1 = true;
+        },
+        editarRelacionmxn(data, columns){
+            this.$refs.relationmxnModal.editableData = data;
+            this.relationColumns = columns;
+            this.relationData = data;
+            this.relation1xm = true;
+        },
+        editarRelacion1xm(data, columns){
+            this.$refs.relation1xmModal.editableData = data;
+            this.relationColumns = columns;
+            this.relationData = data;
+            this.relationmxn = true;
         },
 
     },
@@ -335,19 +356,19 @@ export default {
 
                 <Column :key="col.field" :field="col.field" :header="col.header" sortable v-if="col.type === '1x1'" >
                     <template #body="slotProps">
-                        <Button label="Ver" icon="pi pi-eye" class="p-button-rounded p-button-text p-button-sm" @click="editarRelacion(slotProps.data[col.field], col.data)"/>
+                        <Button label="Ver" icon="pi pi-eye" class="p-button-rounded p-button-text p-button-sm" @click="editarRelacion1x1(slotProps.data[col.field], col.data)"/>
                     </template>
                 </Column>
 
                 <Column :key="col.field" :field="col.field" :header="col.header" sortable v-if="col.type === '1xm'" >
                     <template #body="slotProps">
-                        <Button label="Ver" icon="pi pi-eye" class="p-button-rounded p-button-text p-button-sm" @click="editarRelacion(slotProps.data[col.field], col.data)"/>
+                        <Button label="Ver" icon="pi pi-eye" class="p-button-rounded p-button-text p-button-sm" @click="editarRelacion1xm(slotProps.data[col.field], col.data)"/>
                     </template>
                 </Column>
 
                 <Column :key="col.field" :field="col.field" :header="col.header" sortable v-if="col.type === 'mxn'" >
                     <template #body="slotProps">
-                        <Button label="Ver" icon="pi pi-eye" class="p-button-rounded p-button-text p-button-sm" />
+                        <Button label="Ver" icon="pi pi-eye" class="p-button-rounded p-button-text p-button-sm" @click="editarRelacionmxn(slotProps.data[col.field], col.data)"/>
                     </template>
                 </Column>
 
@@ -379,7 +400,11 @@ export default {
 <Editar ref="editModal" :visible="edit" :columns="editColumns" @canceled="notUpdated()" @confirmed="updated()" :table="selectedTable" />
 
 <!--DIALOGO PARA EDITAR RELACIONES-->
-<Relacion ref="relationModal" :visible="relation" :columns="relationColumns" :data="relationData" @canceled="relacionNotUpdated()" @confirmed="relationUpdated()" />
+<Relacion1x1 ref="relation1x1Modal" :visible="relation1x1" :columns="relationColumns" :data="relationData" @canceled="relationNotUpdated()" @confirmed="relationUpdated()" />
+
+<Relacion1xm ref="relation1xmModal" :visible="relation1xm" :columns="relationColumns" :data="relationData" @canceled="relationNotUpdated()" @confirmed="relationUpdated()" />
+
+<Relacionmxn ref="relationmxnModal" :visible="relationmxn" :columns="relationColumns" :data="relationData" @canceled="relationNotUpdated()" @confirmed="relationUpdated()" />
 
 <!--TOAST-->
 <Toast/>

@@ -44,9 +44,9 @@ export default {
 <template>
     <Dialog v-model:visible="visible" modal header="Crear nuevo registro" @update:visible="cancelar()" dismissableMask >
 
-        <div class="w-full flex flex-col space-y-8 mt-7 mb-1">
+        <div class="w-full flex flex-col space-y-8 mt-7 mb-1" v-for="col in columns">
 
-            <FloatLabel v-for="col in columns">
+            <FloatLabel>
 
                 <InputText :id="col.field" class="w-full" autocomplete="off" v-if="col.type === 'text'" v-model="newData[col.field]" />
 
@@ -65,6 +65,8 @@ export default {
                 <label :for="col.field" class="font-semibold"> {{ col.header }} </label>
 
             </FloatLabel>
+
+            <Button v-if="col.type === 'button'" label="Editar" @click="col.action(newData)" />
 
         </div>
 

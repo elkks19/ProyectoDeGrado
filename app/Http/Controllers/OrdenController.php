@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreOrdenRequest;
 use App\Http\Requests\UpdateOrdenRequest;
 use App\Models\Orden;
+use App\Models\User;
+use App\Models\Producto;
 
 use Inertia\Inertia;
 use App\EstadosOrden;
@@ -22,10 +24,13 @@ class OrdenController extends Controller
             return [
                 'id' => $orden->id,
                 'estado' => [$orden->estado],
+                'usuario' => $orden->user->name,
                 'pago' => [
                     'monto' => $orden->pago->monto,
-                    'estado' => [$orden->pago->estado],
+                    'estado' => $orden->pago->estado,
                     'fechaPago' => $orden->pago->fechaPago,
+                    'divisa' => optional($orden->pago->divisa)->nombre,
+                    'metodoPago' => optional($orden->pago->metodoPago)->nombre,
                 ],
                 'envio' => [
                     'direccion' => $orden->envio->direccion,
@@ -37,8 +42,40 @@ class OrdenController extends Controller
                     'updated_at' => $orden->envio->updated_at->format('Y-m-d H:i:s'),
                     'deleted_at' => optional($orden->envio->deleted_at)->format('Y-m-d H:i:s'),
                 ],
+                'created_at' => $orden->envio->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $orden->envio->updated_at->format('Y-m-d H:i:s'),
+                'deleted_at' => optional($orden->envio->deleted_at)->format('Y-m-d H:i:s'),
             ];
         });
+
+        $deletedOrdenes = $deletedOrdenes->map(function ($orden) {
+            return [
+                'id' => $orden->id,
+                'estado' => [$orden->estado],
+                'usuario' => $orden->user->name,
+                'pago' => [
+                    'monto' => $orden->pago->monto,
+                    'estado' => $orden->pago->estado,
+                    'fechaPago' => $orden->pago->fechaPago,
+                    'divisa' => optional($orden->pago->divisa)->nombre,
+                    'metodoPago' => optional($orden->pago->metodoPago)->nombre,
+                ],
+                'envio' => [
+                    'direccion' => $orden->envio->direccion,
+                    'fechaEnvio' => optional($orden->envio->fechaEnvio)->format('Y-m-d H:i:s'),
+                    'fechaRecepcion' => optional($orden->envio->fechaRecepcion)->format('Y-m-d H:i:s'),
+                    'estado' => $orden->envio->estado,
+                    'precio' => $orden->envio->precio,
+                    'created_at' => $orden->envio->created_at->format('Y-m-d H:i:s'),
+                    'updated_at' => $orden->envio->updated_at->format('Y-m-d H:i:s'),
+                    'deleted_at' => optional($orden->envio->deleted_at)->format('Y-m-d H:i:s'),
+                ],
+                'created_at' => $orden->envio->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $orden->envio->updated_at->format('Y-m-d H:i:s'),
+                'deleted_at' => optional($orden->envio->deleted_at)->format('Y-m-d H:i:s'),
+            ];
+        });
+
 
         return response()->json([
             'data' => $ordenes,
@@ -46,6 +83,7 @@ class OrdenController extends Controller
             'columns' => [
                 [ 'field' => 'id', 'header' => 'ID', 'type' => 'text' ],
                 [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'chips' ],
+                [ 'field' => 'usuario', 'header' => 'Usuario', 'type' => 'text' ],
                 [ 'field' => 'pago', 'header' => 'Pago', 'type' => '1x1',
                     'data' => [
                         [ 'field' => 'monto', 'header' => 'Monto', 'type' => 'text' ],
@@ -64,18 +102,16 @@ class OrdenController extends Controller
                         [ 'field' => 'precio', 'header' => 'Precio', 'type' => 'text' ],
                     ]
                 ],
-                [ 'field' => 'productos', 'header' => 'Productos', 'type' => 'mxn',
-                    'data' => [
-                        [ 'field' => 'nombre', 'header' => 'Nombre', 'type' => 'text' ],
-                        [ 'field' => 'descripcion', 'header' => 'Descripcion', 'type' => 'text' ],
-                        [ 'field' => 'precio', 'header' => 'Precio', 'type' => 'text' ],
-                    ]
-                ]
+                [ 'field' => 'productos', 'header' => 'Productos', 'type' => 'mxn', 'options' => Producto::all()->pluck('nombre')],
+                [ 'field' => 'created_at', 'header' => 'Fecha de Creación', 'type' => 'text' ],
+                [ 'field' => 'updated_at', 'header' => 'Ultima Actualización', 'type' => 'text' ],
+                [ 'field' => 'deleted_at', 'header' => 'Fecha de Eliminación', 'type' => 'status' ],
             ],
             'createColumns' => [
                 [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'select', 'options' => EstadosOrden::all() ],
-                [ 'field' => 'pago', 'header' => 'Pago', 'type' => '' ],
-                [ 'field' => 'envio', 'header' => 'Envio', 'type' => 'button' ],
+                [ 'field' => 'user', 'header' => 'Usuario', 'type' => 'select', 'options' => User::all()->pluck('name') ],
+                [ 'field' => 'pago', 'header' => 'Pago', 'type' => 'button' ],
+                [ 'field' => 'envio', 'header' => 'Envio', 'type' => 'text' ],
             ],
 
             'editColumns' => [
@@ -93,11 +129,18 @@ class OrdenController extends Controller
 
     public function update(UpdateOrdenRequest $request, Orden $orden)
     {
-        //
     }
 
-    public function destroy(Orden $orden)
+    public function destroy(int $id)
     {
-        //
+        $orden = Orden::withTrashed()->find($id);
+
+        if($orden->trashed()) {
+            $orden->restore();
+            return response()->json(['message' => 'Orden restaurada correctamente.'], 200);
+        }
+
+        $orden->delete();
+        return response()->json(['message' => 'Orden eliminada correctamente.'], 200);
     }
 }

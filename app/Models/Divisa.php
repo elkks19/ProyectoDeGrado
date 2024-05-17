@@ -14,8 +14,6 @@ class Divisa extends Model
 
     protected $table = 'divisas';
 
-    public $timestamps = false;
-
     protected $fillable = [
         'nombre',
         'simbolo',

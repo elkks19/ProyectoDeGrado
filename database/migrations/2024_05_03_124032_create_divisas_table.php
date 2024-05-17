@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nombre', 100);
             $table->string('simbolo', 10);
             $table->float('tasa', 2);
+            $table->timestamps();
             $table->softDeletes();
         });
     }

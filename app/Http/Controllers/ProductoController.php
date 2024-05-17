@@ -10,7 +10,8 @@ class ProductoController extends Controller
 {
     public function index()
     {
-        $productos = Producto::withTrashed()->get();
+        $productos = Producto::all();
+        $deletedProductos = Producto::onlyTrashed()->get();
 
         $productos = $productos->map(function ($role) {
             return [
@@ -20,7 +21,19 @@ class ProductoController extends Controller
                 'precio' => $role->precio,
                 'created_at' => $role->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $role->updated_at->format('Y-m-d H:i:s'),
-                'deleted_at' => $role->deleted_at == null ? null : $role->deleted_at->format('Y-m-d H:i:s'),
+                'deleted_at' => optional($role->deleted_at)->format('Y-m-d H:i:s'),
+            ];
+        });
+
+        $deletedProductos = $deletedProductos->map(function ($role) {
+            return [
+                'id' => $role->id,
+                'nombre' => $role->nombre,
+                'descripcion' => $role->descripcion,
+                'precio' => $role->precio,
+                'created_at' => $role->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $role->updated_at->format('Y-m-d H:i:s'),
+                'deleted_at' => optional($role->deleted_at)->format('Y-m-d H:i:s'),
             ];
         });
 

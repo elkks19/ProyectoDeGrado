@@ -31,7 +31,7 @@ class Orden extends Model
         return $this->belongsTo(Pago::class);
     }
 
-    public function usuario(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
