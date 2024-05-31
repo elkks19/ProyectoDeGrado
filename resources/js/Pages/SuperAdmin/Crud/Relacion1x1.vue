@@ -21,7 +21,7 @@ export default {
     methods: {
         store(){
             window.axios({
-                url: this.table.url + '/' + this.editableData.id,
+                url: this.url + '/' + this.id,
                 method: 'put',
                 data: this.editableData
             }).then(response => {

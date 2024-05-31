@@ -25,20 +25,20 @@ class OrdenController extends Controller
         $ordenes = $ordenes->map(function ($orden) {
             return [
                 'id' => $orden->id,
-                'estado' => [$orden->estado],
-                'usuario' => $orden->user->name,
+                'estado' => $orden->estado,
+                'user' => $orden->user->name,
 
                 'pago' => [
                     'monto' => $orden->pago?->monto,
                     'estado' => $orden->pago?->estado,
-                    'fechaPago' => $orden->pago?->fechaPago,
+                    'fechaPago' => $orden->pago?->fechaPago?->format('Y-m-d'),
                     'divisa' => $orden->pago?->divisa?->nombre,
                     'metodoPago' => $orden->pago?->metodoPago?->nombre,
                 ],
                 'envio' => [
                     'direccion' => $orden->envio?->direccion,
-                    'fechaEnvio' => $orden->envio?->fechaEnvio?->format('Y-m-d H:i:s'),
-                    'fechaRecepcion' => $orden->envio?->fechaRecepcion?->format('Y-m-d H:i:s'),
+                    'fechaEnvio' => $orden->envio?->fechaEnvio?->format('Y-m-d'),
+                    'fechaRecepcion' => $orden->envio?->fechaRecepcion?->format('Y-m-d'),
                     'estado' => $orden->envio?->estado,
                     'precio' => $orden->envio?->precio,
                     'created_at' => $orden->envio?->created_at?->format('Y-m-d H:i:s'),
@@ -57,24 +57,24 @@ class OrdenController extends Controller
         $deletedOrdenes = $deletedOrdenes->map(function ($orden) {
             return [
                 'id' => $orden->id,
-                'estado' => [$orden->estado],
-                'usuario' => $orden->user->name,
+                'estado' => $orden->estado,
+                'user' => $orden->user->name,
                 'pago' => [
-                    'monto' => $orden->pago->monto,
-                    'estado' => $orden->pago->estado,
-                    'fechaPago' => $orden->pago->fechaPago,
-                    'divisa' => optional($orden->pago->divisa)->nombre,
-                    'metodoPago' => optional($orden->pago->metodoPago)->nombre,
+                    'monto' => $orden->pago?->monto,
+                    'estado' => $orden->pago?->estado,
+                    'fechaPago' => $orden->pago?->fechaPago?->format('Y-m-d'),
+                    'divisa' => $orden->pago?->divisa?->nombre,
+                    'metodoPago' => $orden->pago?->metodoPago?->nombre,
                 ],
                 'envio' => [
                     'direccion' => $orden->envio->direccion,
-                    'fechaEnvio' => optional($orden->envio->fechaEnvio)->format('Y-m-d H:i:s'),
-                    'fechaRecepcion' => optional($orden->envio->fechaRecepcion)->format('Y-m-d H:i:s'),
-                    'estado' => $orden->envio->estado,
-                    'precio' => $orden->envio->precio,
-                    'created_at' => $orden->envio->created_at->format('Y-m-d H:i:s'),
-                    'updated_at' => $orden->envio->updated_at->format('Y-m-d H:i:s'),
-                    'deleted_at' => optional($orden->envio->deleted_at)->format('Y-m-d H:i:s'),
+                    'fechaEnvio' => $orden->envio?->fechaEnvio?->format('Y-m-d'),
+                    'fechaRecepcion' => $orden->envio?->fechaRecepcion?->format('Y-m-d'),
+                    'estado' => $orden->envio?->estado,
+                    'precio' => $orden->envio?->precio,
+                    'created_at' => $orden->envio?->created_at?->format('Y-m-d H:i:s'),
+                    'updated_at' => $orden->envio?->updated_at?->format('Y-m-d H:i:s'),
+                    'deleted_at' => $orden->envio?->deleted_at?->format('Y-m-d H:i:s'),
                 ],
 
                 'productos' => $orden->productos->pluck('nombre'),
@@ -91,16 +91,17 @@ class OrdenController extends Controller
             'deletedData' => $deletedOrdenes,
             'columns' => [
                 [ 'field' => 'id', 'header' => 'ID', 'type' => 'text' ],
-                [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'chips' ],
-                [ 'field' => 'usuario', 'header' => 'Usuario', 'type' => 'text' ],
+                [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'chip' ],
+                [ 'field' => 'user', 'header' => 'Usuario', 'type' => 'text' ],
                 [ 'field' => 'pago', 'header' => 'Pago', 'type' => '1x1',
                     'data' => [
                         [ 'field' => 'monto', 'header' => 'Monto', 'type' => 'text' ],
                         [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'select', 'options' => EstadosPago::all() ],
-                        [ 'field' => 'fechaPago', 'header' => 'Fecha de Pago', 'type' => 'text' ],
-                        [ 'field' => 'divisa', 'header' => 'Divisa', 'type' => 'text' ],
-                        [ 'field' => 'metodoPago', 'header' => 'Metodo de Pago', 'type' => 'text' ],
-                    ]
+                        [ 'field' => 'fechaPago', 'header' => 'Fecha de Pago', 'type' => 'date' ],
+                        [ 'field' => 'divisa', 'header' => 'Divisa', 'type' => 'select', 'options' => Divisa::all()->pluck('nombre') ],
+                        [ 'field' => 'metodoPago', 'header' => 'Metodo de Pago', 'type' => 'select', 'options' => MetodoPago::all()->pluck('nombre') ],
+                    ],
+                    'url' => '/pagos'
                 ],
                 [ 'field' => 'envio', 'header' => 'Envio', 'type' => '1x1',
                     'data' => [
@@ -119,22 +120,11 @@ class OrdenController extends Controller
             'createColumns' => [
                 [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'select', 'options' => EstadosOrden::all() ],
                 [ 'field' => 'user', 'header' => 'Usuario', 'type' => 'select', 'options' => User::all()->pluck('name') ],
-                [ 'field' => 'pago', 'header' => 'Pago', 'type' => '1x1', 'url' => '/pagos',
-                    'columns' =>[
-                        'monto' => [ 'field' => 'monto', 'header' => 'Monto', 'type' => 'text' ],
-                        'estado' => [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'select', 'options' => EstadosPago::all() ],
-                        'fechaPago' => [ 'field' => 'fechaPago', 'header' => 'Fecha de Pago', 'type' => 'date' ],
-                        'divisa' => [ 'field' => 'divisa', 'header' => 'Divisa', 'type' => 'select', 'options' => Divisa::all()->pluck('nombre') ],
-                        'metodoPago' => [ 'field' => 'metodoPago', 'header' => 'Metodo de Pago', 'type' => 'select', 'options' => MetodoPago::all()->pluck('nombre') ]
-                    ]
-                ],
-                [ 'field' => 'envio', 'header' => 'Envio', 'type' => 'text' ],
             ],
 
             'editColumns' => [
                 [ 'field' => 'estado', 'header' => 'Estado', 'type' => 'select', 'options' => EstadosOrden::all() ],
-                [ 'field' => 'pago', 'header' => 'Pago', 'type' => 'text' ],
-                [ 'field' => 'envio', 'header' => 'Envio', 'type' => 'text' ],
+                [ 'field' => 'user', 'header' => 'Usuario', 'type' => 'select', 'options' => User::all()->pluck('name') ],
             ]
         ]);
     }

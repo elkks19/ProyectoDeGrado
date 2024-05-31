@@ -17,8 +17,8 @@ return new class extends Migration
         Schema::create('ordenes', function (Blueprint $table) {
             $table->id();
             $table->enum('estado', EstadosOrden::all())->default(EstadosOrden::PENDIENTE->value);
-            $table->foreignIdFor(Pago::class)->nullable()->constrained('pagos', 'id');
-            $table->foreignIdFor(Envio::class)->nullable()->constrained('envios', 'id');
+            $table->foreignId('pago_id')->nullable()->constrained('pagos', 'id');
+            $table->foreignId('envio_id')->nullable()->constrained('envios', 'id');
             $table->foreignIdFor(User::class)->constrained('users', 'id');
             $table->timestamps();
             $table->softDeletes();

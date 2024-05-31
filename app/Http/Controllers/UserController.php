@@ -32,7 +32,7 @@ class UserController extends Controller
                 'ci' => $user->ci,
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
-                'deleted_at' => $user->deleted_at == null ? null : $user->deleted_at->format('Y-m-d H:i:s'),
+                'deleted_at' => $user->deleted_at?->format('Y-m-d H:i:s'),
             ];
         });
 
@@ -46,7 +46,7 @@ class UserController extends Controller
                 'ci' => $user->ci,
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
-                'deleted_at' => $user->deleted_at == null ? null : $user->deleted_at->format('Y-m-d H:i:s'),
+                'deleted_at' => $user->deleted_at?->format('Y-m-d H:i:s'),
             ];
         });
 
@@ -90,14 +90,14 @@ class UserController extends Controller
 
         event(new Registered($user));
 
-        return response()->json(['message' => 'User created'], 201);
+        return response()->json(['message' => 'Usuario creado correctamente'], 201);
     }
 
 
     public function update(UpdateUserRequest $request, User $user)
     {
         $request->update($user);
-        return response()->json(['message' => 'User updated'], 200);
+        return response()->json(['message' => 'Usuario actualizado correctamente'], 200);
     }
 
 
@@ -107,10 +107,10 @@ class UserController extends Controller
 
         if ($user->trashed()) {
             $user->restore();
-            return response()->json(['message' => 'User restored'], 200);
+            return response()->json(['message' => 'Usuario restaurado correctamente'], 200);
         }
 
         $user->delete();
-        return response()->json(['message' => 'User deleted'], 200);
+        return response()->json(['message' => 'Usuario eliminado correctamente'], 200);
     }
 }

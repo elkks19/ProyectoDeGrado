@@ -84,9 +84,11 @@ export default {
             columns: [],
             createColumns: [],
             editColumns: [],
+
             relationColumns: [],
             relationOptions: [],
             relationId: null,
+            relationUrl: null,
         }
     },
     methods: {
@@ -221,7 +223,6 @@ export default {
             }
             else{
                 this.menuModel = [
-                    { label: 'Editar', icon: 'pi pi-fw pi-pen-to-square', command: () => this.editar(this.selectedRow) },
                     { label: 'Restaurar', icon: 'pi pi-fw pi-undo', command: () => this.confirmarRestauracion(this.selectedRow) }
                 ];
             }
@@ -237,10 +238,11 @@ export default {
         },
 
         // PARA EDITAR LAS RELACIONES
-        editarRelacion1x1(data, columns){
+        editarRelacion1x1(data, columns, url){
             this.$refs.relation1x1Modal.editableData = data;
             this.relationColumns = columns;
             this.relationData = data;
+            this.relationUrl = url;
             this.relation1x1 = true;
         },
         editarRelacion1xm(data, columns){
@@ -323,6 +325,12 @@ export default {
                 <Column :key="col.field" :field="col.field" :header="col.header" v-if="col.type === 'chips'">
                     <template #body="slotProps">
                         <Chip v-for="rol in slotProps.data[col.field]" :label="rol" />
+                    </template>
+                </Column>
+
+                <Column :key="col.field" :field="col.field" :header="col.header" v-if="col.type === 'chip'">
+                    <template #body="slotProps">
+                        <Chip :label="slotProps.data[col.field]" />
                     </template>
                 </Column>
 

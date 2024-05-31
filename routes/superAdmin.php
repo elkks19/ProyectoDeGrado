@@ -7,6 +7,8 @@ use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\EnvioController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\MetodoPagoController;
+use App\Http\Controllers\DivisaController;
 
 Route::group(['middleware' => 'role:superAdmin'], function () {
     Route::get('/dashboard', function () {
@@ -26,6 +28,10 @@ Route::group(['middleware' => 'role:superAdmin'], function () {
     Route::apiResource('envios', EnvioController::class);
     // TABLA CATEGORIAS
     Route::apiResource('categorias', CategoriaController::class);
+    // TABLA METODOS DE PAGO
+    Route::apiResource('metodos-de-pago', MetodoPagoController::class);
+    // TABLA DIVISAS
+    Route::apiResource('divisas', DivisaController::class);
 
 });
 

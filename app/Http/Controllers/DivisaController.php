@@ -13,7 +13,7 @@ class DivisaController extends Controller
         $divisas = Divisa::all();
         $deletedDivisas = Divisa::onlyTrashed()->get();
 
-        $divsas = $divisas->map(function ($user) {
+        $divisas = $divisas->map(function ($user) {
             return [
                 'id' => $user->id,
                 'nombre' => $user->nombre,
@@ -21,7 +21,7 @@ class DivisaController extends Controller
                 'tasa' => $user->tasa,
                 'created_at' => $user->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
-                'deleted_at' => optional($user->deleted_at)->format('Y-m-d H:i:s'),
+                'deleted_at' => $user->deleted_at?->format('Y-m-d H:i:s'),
             ];
         });
 
@@ -31,12 +31,15 @@ class DivisaController extends Controller
                 'nombre' => $user->nombre,
                 'simbolo' => $user->simbolo,
                 'tasa' => $user->tasa,
+                'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $user->updated_at->format('Y-m-d H:i:s'),
+                'deleted_at' => $user->deleted_at?->format('Y-m-d H:i:s'),
             ];
         });
 
         return response()->json([
-            'data' => $users,
-            'deletedData' => $deletedUsers,
+            'data' => $divisas,
+            'deletedData' => $deletedDivisas,
             'columns' => [
                 [ 'field' => 'id', 'header' => 'ID', 'type' => 'text'],
                 [ 'field' => 'nombre', 'header' => 'Nombre', 'type' => 'text'],
@@ -61,16 +64,26 @@ class DivisaController extends Controller
 
     public function store(StoreDivisaRequest $request)
     {
-        //
+        $request->save();
+        return response()->json(['message' => 'Divisa creada correctamente'], 201);
     }
 
     public function update(UpdateDivisaRequest $request, Divisa $divisa)
     {
-        //
+        $request->update($divisa);
+        return response()->json(['message' => 'Divisa actualizada correctamente'], 200);
     }
 
-    public function destroy(Divisa $divisa)
+    public function destroy(int $id)
     {
-        //
+        $divisa = Divisa::withTrashed()->find($id);
+
+        if ($divisa->trashed()) {
+            $divisa->restore();
+            return response()->json(['message' => 'Divisa Restaurada Correctamente'], 200);
+        }
+
+        $divisa->delete();
+        return response()->json(['message' => 'Divisa Eliminada Correctamente'], 200);
     }
 }

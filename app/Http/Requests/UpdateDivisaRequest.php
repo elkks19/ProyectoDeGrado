@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Divisa;
 
 class UpdateDivisaRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateDivisaRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,15 @@ class UpdateDivisaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nombre' => 'string|max:100',
+            'simbolo' => 'string|max:10',
+            'tasa' => 'numeric',
         ];
+    }
+
+    public function update(Divisa $divisa): Divisa
+    {
+        $divisa->update($this->validated());
+        return $divisa;
     }
 }

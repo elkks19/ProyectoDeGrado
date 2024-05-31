@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\MetodoPago;
 
 class UpdateMetodoPagoRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateMetodoPagoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,13 @@ class UpdateMetodoPagoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nombre' => 'string|max:100'
         ];
+    }
+
+    public function update(MetodoPago $metodoPago): MetodoPago
+    {
+        $metodoPago = $metodoPago->update($this->validated());
+        return $metodoPago;
     }
 }

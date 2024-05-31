@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Producto;
 use App\Models\Divisa;
 use App\Models\MetodoPago;
+use Illuminate\Validation\Rule;
 
 use App\EstadosOrden;
 use App\EstadosPago;
@@ -31,46 +32,23 @@ class UpdateOrdenRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'estado' => 'string,in:'.EstadosOrden::all(),
             'relacionmxn' => 'array', // PRODUCTOS
 
+            'estado' => ['string', Rule::in(EstadosOrden::all())],
             'usuario' => 'string',
-
-            'montoPago' => 'numeric',
-            'fechaPago' => 'date',
-            'estadoPago' => 'string,in:'.EstadosPago::all(),
-            'divisaPago' => 'string',
-            'metodoPago' => 'string',
-
-            'direccionEnvio' => 'string',
-            'fechaEnvio' => 'date',
-            'fechaRecepcionEnvio' => 'date',
-            'estadoEnvio' => 'string,in:'.EstadosEnvio::all(),
-            'precioEnvio' => 'numeric',
         ];
     }
 
     public function update(Orden $orden): Orden
     {
-        $orden->update(['estado' => $this->estado]);
-
-        $orden->pago->update([
-            'monto' => $this->montoPago,
-            'fechaPago' => $this->fechaPago,
-            'estado' => $this->estadoPago,
-            'divisa' => Divisa::where('nombre', $this->divisa)->first()->id,
-            'metodoPago' => MetodoPago::where('nombre', $this->metodoPago)->first()->id
+        $orden->update([
+            'estado' => $this->estado,
         ]);
 
-        $orden->envio->update([
-            'direccion' => $this->direccionEnvio,
-            'fechaEnvio' => $this->fechaEnvio,
-            'fechaRecepcion' => $this->fechaRecepcionEnvio,
-            'estado' => $this->estadoEnvio,
-            'precio' => $this->precioEnvio,
-        ]);
-
-        $orden->usuario = User::where('name', $this->usuario)->first()->id;
+        if($this->usuario){
+            $user = User::where('name', $this->usuario)->first()->id;
+            $orden->user()->attach($user);
+        }
 
         $ids = [];
 
@@ -78,12 +56,11 @@ class UpdateOrdenRequest extends FormRequest
             foreach ($this->relacionmxn as $nombre){
                 $ids[] = Producto::where('nombre', $nombre)->first()->id;
             }
+
+            $orden->productos()->sync($ids);
         }
 
-        $orden->productos()->sync($ids);
-
         $orden->save();
-
         return $orden;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\MetodoPago;
 
 class StoreMetodoPagoRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreMetodoPagoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,13 @@ class StoreMetodoPagoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nombre' => 'required|string|max:100',
         ];
+    }
+
+    public function save(): MetodoPago
+    {
+        $metodoPago = MetodoPago::create($this->validated());
+        return $metodoPago;
     }
 }
