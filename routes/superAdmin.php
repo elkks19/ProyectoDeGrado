@@ -9,6 +9,7 @@ use App\Http\Controllers\EnvioController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\MetodoPagoController;
 use App\Http\Controllers\DivisaController;
+use App\Http\Controllers\ReviewController;
 
 Route::group(['middleware' => 'role:superAdmin'], function () {
     Route::get('/dashboard', function () {
@@ -32,6 +33,8 @@ Route::group(['middleware' => 'role:superAdmin'], function () {
     Route::apiResource('metodos-de-pago', MetodoPagoController::class);
     // TABLA DIVISAS
     Route::apiResource('divisas', DivisaController::class);
+    // TABLA REVIEWS
+    Route::apiResource('reviews', ReviewController::class);
 
 });
 
